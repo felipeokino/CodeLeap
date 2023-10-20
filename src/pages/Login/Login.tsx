@@ -13,7 +13,7 @@ export default function Login() {
 
         localStorage.setItem('username', username);
        setTimeout(() => {
-        navigate('/')
+        navigate('/', {replace: true})
        }, 1000)
     }
 
