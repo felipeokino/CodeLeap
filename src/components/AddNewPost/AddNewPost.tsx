@@ -1,42 +1,31 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { actions } from '../../actions/posts';
 import { getPostDataSelector, getPostsLoadingSelector } from '../../selectors/posts';
-import { TPost } from '../../types';
+import { useState } from 'react';
 
-type TAddNewPostProps = {
-  post?: TPost,
-  onlyInputs?: boolean
-}
 
-function AddNewPost({post, onlyInputs = false}: TAddNewPostProps) {
+function AddNewPost() {
+  const [title, setTitle] = useState('')
+  const [content, setContent] = useState('')
   const isLoading = useSelector(getPostsLoadingSelector);
-  const postData = useSelector(getPostDataSelector)
-
-  const disableButton = isLoading || !(postData.title && postData.content);
+  
+  const disableButton = isLoading || !(title && content);
   const dispatch = useDispatch();
 
   const handleAddPost = () => {
-    if (postData.id) {
-      dispatch(actions.updatePost(postData));
-    } else {
-      dispatch(actions.addPost(postData));
-    }
-  }
-
-  const handleEditInput = (field: string, value: string) => {
-    dispatch(actions.setPostDataByField({field, value}))
+    dispatch(actions.addPost({content, title}));
   }
 
   return (
     <div className='w-2/4 p-6 flex flex-col bg-zinc-800 rounded-md gap-4 max-sm:w-5/6'>
       <span className='text-2xl font-bold'>What's on your mind?</span>
         <div>
-          {!onlyInputs && <span>Title</span>}
+          <span>Title</span>
           <input 
               type="text" 
               className="rounded-md h-8 w-full pl-2 mt-2 text-purple-950" 
-              value={postData?.title|| ''}
-              onChange={e => handleEditInput('title', e.target.value)}
+              value={title|| ''}
+              onChange={e => setTitle(e.target.value)}
           />
         </div>
         <div className='w-full'>
@@ -44,8 +33,8 @@ function AddNewPost({post, onlyInputs = false}: TAddNewPostProps) {
           <textarea 
             maxLength={255}
             className="rounded-md h-8 w-full p-2 mt-2 text-purple-950 min-h-[100px]" 
-            value={postData?.content|| ''}
-            onChange={e => handleEditInput('content', e.target.value)}
+            value={content|| ''}
+            onChange={e => setContent(e.target.value)}
           />
           <span className='ml-auto text-xs text-white/70 w-full text-end block'>Max 255 characters</span>
         </div>
@@ -54,7 +43,7 @@ function AddNewPost({post, onlyInputs = false}: TAddNewPostProps) {
           onClick={handleAddPost}
           disabled={disableButton}
         >
-          {postData?.id ? 'Save' : 'Done'}
+          Done
           {
               isLoading && <div className='w-4 h-4 border-blue-900 animate-[spin_1s_infinite_linear] border-t-2 border-r-4 rounded-full '></div>
           }
